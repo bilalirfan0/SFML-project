@@ -2,28 +2,59 @@
 
 Space Shooter mid-evaluation project using C++17 and SFML 3.1.0.
 
-This initial contribution contains Bilal's two commented sections from the
-original 98-line, single-file mid-evaluation `main.cpp`:
+The combined mid-evaluation game is implemented in a single `main.cpp`.
+Bilal, Humail and Abdullah's sections have been merged into `main`. The game
+logic matches the original 98-line laptop source; the current source has
+additional blank lines and different indentation.
 
-- Loading the five artwork textures and setting up the background, player,
-  and 780 x 780 window.
-- Moving the player with the four arrow keys.
+## Current gameplay and controls
 
-A small shared event/render loop keeps this contribution runnable: it handles
-window closing and displays the background and player. Humail's enemy formation
-and Abdullah's firing/bullet logic are left for their own contributions. The
-preview currently shows the background and a movable player, without enemies
-or shooting. Movement retains the original per-frame speed and has no boundary
-restriction. Close the window with its X button to exit.
+The game opens directly in a 780 x 780 window with a space background, the
+player ship, and six stationary enemies in two rows of three.
+
+| Control | Action |
+| --- | --- |
+| Arrow keys | Move the player left, right, up and down. |
+| Space | Fire one bullet; release Space before firing again. |
+| Escape or the window's close button | Exit the game. |
+
+Player bullets move upward and are removed after leaving the top of the screen.
+This is the mid-evaluation prototype: bullets pass through enemies, enemies do
+not move or attack, and there is no collision damage, scoring, lives, menu or
+level progression. Player movement has no screen-boundary restriction. Movement
+and bullet speeds are per frame, so their speed depends on the frame rate.
+
+## Member sections in main.cpp
+
+| Member | Sections identified by the source comments |
+| --- | --- |
+| Bilal | Artwork loading, background/player/window setup, and four-way player movement. |
+| Humail | Sprite containers, two rows of enemies, and drawing the scene. |
+| Abdullah | Firing state, window/keyboard events, shot rearming, bullet creation, movement and removal. |
+
+## Requirements and bundled SFML version
+
+- **Windows 64-bit** for the supplied binaries and build/debug configuration.
+- **C++17** with a compatible **MSYS2 UCRT64 GCC** toolchain. The verified local
+  compiler is GCC **15.2.0**, installed at `C:\msys64\ucrt64\bin\g++.exe`.
+- **GDB** for F5 debugging, at `C:\msys64\ucrt64\bin\gdb.exe` by default.
+- **SFML 3.1.0**, bundled in `vendor/SFML3`. Its headers, CMake package version
+  and all three supplied SFML DLLs identify version 3.1.0.
+- VS Code and its Microsoft C/C++ extension are optional for editing/debugging;
+  `run.cmd` and the PowerShell build command work without VS Code.
+
+The supplied SFML package includes the headers, import libraries and runtime
+DLLs needed for this game. The build links `sfml-graphics`, `sfml-window` and
+`sfml-system`. The compiler and debugger must be installed separately. A
+different compiler toolchain requires compatible SFML binaries.
 
 ## Build and run on Windows
 
-Install MSYS2 UCRT64 GCC and GDB compatible with the bundled SFML libraries
-(the original setup uses GCC 15.2.0 at `C:\msys64\ucrt64\bin`). The compiler
-is installed separately; the SFML headers, libraries, DLLs and license are
-included in `vendor/SFML3`.
+Clone this repository, or download and extract it. Open the folder containing
+`main.cpp`, `build.ps1`, `assets` and `vendor` in VS Code, or double-click
+`run.cmd`. Close any running game/debug session before rebuilding.
 
-Open this repository folder in VS Code, or double-click `run.cmd`.
+Run these commands from the repository root:
 
 ```powershell
 # Build
@@ -51,14 +82,42 @@ cd assets
 ```
 
 The build copies SFML and compiler runtime DLLs beside the executable in
-`build`. Generated executables and object files are ignored by Git.
+`build`: `sfml-graphics-3.dll`, `sfml-window-3.dll`, `sfml-system-3.dll`,
+`libgcc_s_seh-1.dll`, `libstdc++-6.dll` and `libwinpthread-1.dll`. Keep these
+DLLs beside `space-shooter-mid.exe`. Generated executables and object files
+are ignored by Git and are created when you build.
+
+## Included images
+
+All five images loaded by `main.cpp` are committed to this repository:
+
+| File | Purpose |
+| --- | --- |
+| [assets/img/abdullah.jpg](assets/img/abdullah.jpg) | Space background. |
+| [assets/img/level1c.png](assets/img/level1c.png) | Player ship. |
+| [assets/img/enemy_laser.png](assets/img/enemy_laser.png) | Player bullet. |
+| [assets/img/PNG/Enemies/enemyGreen1.png](assets/img/PNG/Enemies/enemyGreen1.png) | First enemy row. |
+| [assets/img/PNG/Enemies/enemyBlue1.png](assets/img/PNG/Enemies/enemyBlue1.png) | Second enemy row. |
+
+Preserve these filenames and folder paths. `main.cpp` loads them as `img/...`
+relative to the `assets` working directory. If artwork cannot be loaded, start
+the game with `run.cmd` or the supplied build/debug commands.
 
 ## Repository contents
 
-- `main.cpp`: Bilal's original setup and movement sections, plus shared preview support.
-- `assets`: the five images loaded by the original setup section.
-- `vendor/SFML3`: the matching SFML dependency package and its license.
+- `main.cpp`: the combined game with all three member sections.
+- `assets`: all five required images listed above.
+- `vendor/SFML3`: SFML 3.1.0 headers, libraries, DLLs and license.
 - `build.ps1`, `run.cmd`, `.vscode`: build, launch and editor configuration.
+- `.gitignore`: excludes generated build outputs and object files.
+- `build`: generated locally when compiling; not committed.
 
-Keep subsequent game contributions in this same `main.cpp`. SFML's license is
-included at `vendor/SFML3/share/doc/SFML/license.md`.
+The combined source has compiled with `-Wall -Wextra -Wpedantic -Werror` on
+the verified local setup. Local controlled-input checks passed for enemy
+placement, all four movement directions, one-shot limiting/rearming, bullets
+passing through stationary enemies, off-screen bullet removal and rendering
+with the real images. The verification scripts/previews used for those checks
+are local build artifacts and are not included in the repository.
+
+SFML's license is included at
+[vendor/SFML3/share/doc/SFML/license.md](vendor/SFML3/share/doc/SFML/license.md).
