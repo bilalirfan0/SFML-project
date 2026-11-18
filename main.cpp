@@ -39,17 +39,28 @@ int main()
             enemy.setPosition({firstX[row] + spacing[row] * column, 70.f + 100.f * row});
             enemies.push_back(enemy);
         }
+    // Part 3 - Abdullah: firing state and event handling.
+    bool canFire = true;
 
-    // Shared preview support: keep the window responsive until it is closed.
     while (window.isOpen())
     {
         while (const auto event = window.pollEvent())
         {
-            if (event->is<Event::Closed>())
+            const auto* pressed = event->getIf<Event::KeyPressed>();
+            if (event->is<Event::Closed>() ||
+                (pressed && pressed->code == Keyboard::Key::Escape))
+            {
                 window.close();
+                break;
+            }
+            const auto* released = event->getIf<Event::KeyReleased>();
+            if (released && released->code == Keyboard::Key::Space)
+                canFire = true;
         }
         if (!window.isOpen())
             break;
+
+   
 
         // Bilal: continuous movement using the four arrow keys.
         if (Keyboard::isKeyPressed(Keyboard::Key::Left))  player.move({-0.3f, 0.f});
@@ -57,12 +68,25 @@ int main()
         if (Keyboard::isKeyPressed(Keyboard::Key::Up))    player.move({0.f, -0.3f});
         if (Keyboard::isKeyPressed(Keyboard::Key::Down))  player.move({0.f, 0.3f});
 
-        // Shared preview support: display Bilal's background and player.
-        window.clear(Color::Black);
-        window.draw(background);
-        window.draw(player);
-        window.display();
-    }
+        
+       // Abdullah: create one bullet, then wait for Space to be released.
+        if (Keyboard::isKeyPressed(Keyboard::Key::Space) && canFire)
+        {
+            Sprite bullet(bulletTexture);
+            bullet.setPosition(player.getPosition());
+            bullets.push_back(bullet);
+            canFire = false;
+        }
+            // Abdullah: move bullets upward and remove them safely off-screen.
+            for (size_t i = 0; i < bullets.size();)
+            {
+                bullets[i].move({0.f, -0.75f});
+                if (bullets[i].getPosition().y < 0.f)
+                    bullets.erase(bullets.begin() + i);
+                else
+                    ++i;
+            }
+    
     // Humail: clear, draw the scene in order, and show the frame.
         window.clear(Color::Black);
         window.draw(background);
@@ -74,5 +98,5 @@ int main()
         window.display();
     }
     return 0;
-    return 0;
+    
 }
