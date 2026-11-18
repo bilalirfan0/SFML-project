@@ -27,6 +27,18 @@ int main()
     player.setScale({0.2f, 0.2f});
     RenderWindow window(VideoMode({780, 780}), "SPACE SHOOTER");
     window.setKeyRepeatEnabled(false);
+     // Part 2 - Humail: sprite containers and two rows of enemies.
+    vector<Sprite> enemies;
+    vector<Sprite> bullets;
+    const float firstX[2] = {200.f, 60.f}, spacing[2] = {145.f, 300.f};
+    for (int row = 0; row < 2; ++row)
+        for (int column = 0; column < 3; ++column)
+        {
+            Sprite enemy(enemyTextures[row]);
+            enemy.setScale({0.6f, 0.6f});
+            enemy.setPosition({firstX[row] + spacing[row] * column, 70.f + 100.f * row});
+            enemies.push_back(enemy);
+        }
 
     // Shared preview support: keep the window responsive until it is closed.
     while (window.isOpen())
@@ -51,5 +63,16 @@ int main()
         window.draw(player);
         window.display();
     }
+    // Humail: clear, draw the scene in order, and show the frame.
+        window.clear(Color::Black);
+        window.draw(background);
+        window.draw(player);
+        for (const auto& bullet : bullets)
+            window.draw(bullet);
+        for (const auto& enemy : enemies)
+            window.draw(enemy);
+        window.display();
+    }
+    return 0;
     return 0;
 }
